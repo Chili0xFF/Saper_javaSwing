@@ -66,9 +66,9 @@ public class Main {
         //Wczytujemy plik//
         BufferedReader csv = null;
         try {
-            if (dif == 0) csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordEasy.csv"));
-            if (dif == 1) csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordMedium.csv"));
-            if (dif == 2) csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordHigh.csv"));
+            if (dif == 0) csv = new BufferedReader(new FileReader("./src/com/company/csvs/rekordEasy.csv"));
+            if (dif == 1) csv = new BufferedReader(new FileReader("./src/com/company/csvs/rekordMedium.csv"));
+            if (dif == 2) csv = new BufferedReader(new FileReader("./src/com/company/csvs/rekordHard.csv"));
             String row;
             int i =-1;
             while((row = csv.readLine()) !=null){
@@ -460,13 +460,13 @@ public class Main {
         try {
             switch (saper.getBok()) {
                 case 8:
-                    csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordEasy.csv"));
+                    csv = new BufferedReader(new FileReader("./src/com/company/csvs/rekordEasy.csv"));
                     break;
                 case 12:
-                    csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordMedium.csv"));
+                    csv = new BufferedReader(new FileReader("./src/com/company/csvs/rekordMedium.csv"));
                     break;
                 case 15:
-                    csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordHard.csv"));
+                    csv = new BufferedReader(new FileReader("./src/com/company/csvs/rekordHard.csv"));
                     break;
             }
             String row = "";
@@ -523,7 +523,7 @@ public class Main {
         newDataCzas[j][0]=Integer.parseInt(String.valueOf(czas[0]));
         newDataCzas[j][1]=Integer.parseInt(String.valueOf(czas[1]));
         newDataCzas[j][2]=Integer.parseInt(String.valueOf(czas[2]));
-        dataName[j] = JOptionPane.showInputDialog(null,"NOWY REKORD! PODAJ SWÓJ NICK (3 znaki)");
+        dataName[j] = JOptionPane.showInputDialog(null,"NOWY REKORD! PODAJ SWÓJ NICK");
         System.out.println("PO ZMIANACH I WPISANIU");
         for (int[] dataCzasTemp:newDataCzas) {
             System.out.println(""+dataCzasTemp[2]);
@@ -533,13 +533,13 @@ public class Main {
         try {
             switch (saper.getBok()) {
                 case 8:
-                    path = "E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordEasy.csv";
+                    path = "./src/com/company/csvs/rekordEasy.csv";
                     break;
                 case 12:
-                    path = "E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordMedium.csv";
+                    path = "./src/com/company/csvs/rekordMedium.csv";
                     break;
                 case 15:
-                    path = "E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordHard.csv";
+                    path = "./src/com/company/csvs/rekordHard.csv";
                     break;
             }
             csv = new FileOutputStream(path,true);
