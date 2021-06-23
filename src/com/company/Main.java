@@ -6,6 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.Date;
 import java.util.Random;
 
 public class Main {
@@ -50,6 +56,48 @@ public class Main {
         window.add(plansza);
         JMenuBar menu = menu(pole,plansza);
         window.setJMenuBar(menu);
+    }
+    private static void initRecords(int dif){
+        //Tworzymy okno rekordów//
+        JFrame records = new JFrame("Rekordy");
+        records.setSize(300,300);
+        JPanel panelki = new JPanel(new GridLayout(11,5));
+        JLabel[][] rekordy = new JLabel[11][5];
+        //Wczytujemy plik//
+        BufferedReader csv = null;
+        try {
+            if (dif == 0) csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordEasy.csv"));
+            if (dif == 1) csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordMedium.csv"));
+            if (dif == 2) csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordHigh.csv"));
+            String row;
+            int i =-1;
+            while((row = csv.readLine()) !=null){
+                i++;
+                String[] data = row.split(",");
+                if(i==0){
+                    rekordy[i][0] = new JLabel("Miejsce",SwingConstants.CENTER);
+                }else
+                {
+                    //Wypisujemy wartości z pliku//
+                    rekordy[i][0] = new JLabel(""+i,SwingConstants.CENTER);
+                }
+                rekordy[i][1] = new JLabel(data[0],SwingConstants.CENTER);
+                rekordy[i][2] = new JLabel(data[1],SwingConstants.CENTER);
+                rekordy[i][3] = new JLabel(data[2],SwingConstants.CENTER);
+                rekordy[i][4] = new JLabel(data[3],SwingConstants.CENTER);
+                panelki.add(rekordy[i][0]);
+                panelki.add(rekordy[i][1]);
+                panelki.add(rekordy[i][2]);
+                panelki.add(rekordy[i][3]);
+                panelki.add(rekordy[i][4]);
+            }
+            records.add(panelki);
+            records.setResizable(false);
+            records.setVisible(true);
+
+        }catch (Exception e){
+            System.out.println("problem z odczytem pliku: "+dif);
+        }
     }
     private static JPanel plansza(int a, Pole[][] pole){
         JPanel mapa = new JPanel(new GridLayout(a+1,a+1));
@@ -129,16 +177,41 @@ public class Main {
         GraNowaGra.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                saper.resetTime();
                 inicjalizuj();
             }
         });
-        JMenuItem GraRanking=new JMenuItem("Ranking");
+        JMenuItem Rekordyes = new JMenuItem("Ranking easy");
+        Rekordyes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                initRecords(0);
+            }
+        });
+        Gra.add(Rekordyes);
+        JMenuItem Rekordymid = new JMenuItem("Ranking medium");
+        Rekordymid.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                initRecords(1);
+            }
+        });
+        Gra.add(Rekordymid);
+        JMenuItem Rekordy = new JMenuItem("Ranking hard");
+        Rekordy.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                initRecords(2);
+            }
+        });
+        Gra.add(Rekordy);
         JMenuItem TrudnoscEasy=new JMenuItem("łatwy (8x8::6)");
         TrudnoscEasy.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saper.setBok(8);
                 saper.setBomby(6);
+                saper.resetTime();
                 inicjalizuj();
             }
         });
@@ -148,6 +221,7 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 saper.setBok(12);
                 saper.setBomby(18);
+                saper.resetTime();
                 inicjalizuj();
             }
         });
@@ -157,10 +231,11 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 saper.setBok(15);
                 saper.setBomby(40);
+                saper.resetTime();
                 inicjalizuj();
             }
         });
-        Gra.add(GraNowaGra); //Gra.add(GraRanking);
+        Gra.add(GraNowaGra);
         Trudnosc.add(TrudnoscEasy);Trudnosc.add(TrudnoscMedium);Trudnosc.add(TrudnoscHard);
         mb.add(Gra);mb.add(Trudnosc);
         return mb;
@@ -249,16 +324,10 @@ public class Main {
                         }
                     }
                 }
-
-
             }else i++;
         }
-        /*for (int i = 0; i < a; i++) {
-            for (int j = 0; j < a; j++) {
-                System.out.print(pole[i][j].getWartosc()+" ");
-            }
-            System.out.println("");
-        }*/
+        //zmienić warunek wygranej na wszystkie pola
+        //ranking z pliku.csv
     }
     private static void ustawIkone(Pole[][] pole, JButton[][] button,int i, int j){
         if(button[i][j].getIcon()!=ikony.flag.getIcon()){
@@ -276,7 +345,7 @@ public class Main {
                     button[i][j].setMnemonic('e');
                     button[i][j].setVisible(false);
                     if(i>0){
-                        if(j>0)if(button[i-1][j-1].getIcon()==ikony.questionMark.getIcon())ustawIkone(pole,button,i-1,j-1);
+                        if(j>0&&button[i-1][j-1].getIcon()==ikony.questionMark.getIcon())ustawIkone(pole,button,i-1,j-1);
                         if(button[i-1][j].getIcon()==ikony.questionMark.getIcon())ustawIkone(pole,button,i-1,j);
                         if(j<pole[0].length-1)if(button[i-1][j+1].getIcon()==ikony.questionMark.getIcon())ustawIkone(pole,button,i-1,j+1);
                     }
@@ -335,16 +404,32 @@ public class Main {
             for (int j = 0; j < pole[0].length; j++) {
                 int mnemo = buttons[i][j].getMnemonic();
                 String kar = pole[i][j].getWartosc();
-                //warunek wygranej, każda bomba w pole[][] musi mieć przypisany mnemonic flagi na buttonie;
-                if(kar.equals("B")){
-                    if (mnemo!=70){
-                        wygrana=false;
+                //warunek wygranej, każdpuste
+                switch(kar){
+                    case " ":
+                        if (mnemo!=69){
+                            wygrana=false;
+                        }
                         break;
-                    }
+                    case "1":
+                    case "2":
+                    case "3":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                        if(mnemo!=76){
+                            wygrana=false;
+                        }
+                        break;
                 }
             }
         }
-        if(wygrana)wygrana();
+        if(wygrana){
+            wygrana();
+            odslonBomby(pole,buttons);
+        }
     }
     private static void odslonBomby(Pole[][] pola, JButton[][] buttons){
         for (int i = 0; i < saper.getBok(); i++) {
@@ -365,13 +450,138 @@ public class Main {
     private static void wygrana(){
         statusWin.setText("WYGRANA");
         soundBoard.play("win");
+        long[] czas = giveMeTimeElapsed();  //[0] -> hours [1] -> minutes [2] -> seconds;
+        podmienRanking(czas);
         JOptionPane.showMessageDialog(null,"WYGRANA");
-        System.out.println("Win!");
+    }
+
+    private static boolean podmienRanking(long[] czas) {
+        BufferedReader csv = null;
+        try {
+            switch (saper.getBok()) {
+                case 8:
+                    csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordEasy.csv"));
+                    break;
+                case 12:
+                    csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordMedium.csv"));
+                    break;
+                case 15:
+                    csv = new BufferedReader(new FileReader("E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordHard.csv"));
+                    break;
+            }
+            String row = "";
+            int i=-2;
+
+            int[][] dataCzas = new int[10][3];
+            String[] dataName = new String[10];
+
+            while((row = csv.readLine()) !=null){
+                i++;
+                if(i==-1)continue;
+                String[] data = row.split(",");
+                dataName[i] = data[0];
+                dataCzas[i][0] = Integer.parseInt(data[1]);
+                dataCzas[i][1] = Integer.parseInt(data[2]);
+                dataCzas[i][2] = Integer.parseInt(data[3]);
+            }
+            for (int j = 0; j < 10; j++) {
+                if((dataCzas[j][0]>czas[0])||(dataCzas[j][0]==czas[0]&&dataCzas[j][1]>czas[1])||(dataCzas[j][0]==czas[0]&&dataCzas[j][1]==czas[1]&&dataCzas[j][2]>czas[2])){
+                    podmienWypiszRanking(dataCzas,dataName,j,czas);
+                    return true;
+                }
+            }
+        }catch(Exception e){
+            System.out.println("ERROR PRZY SPRAWDZANIU RANKINGU");
+        }
+
+        return true;
+    }
+
+    private static void podmienWypiszRanking(int[][] dataCzas, String[] dataName, int j, long[] czas) {
+        System.out.println("J: "+j+"   PRZED ZMIANAMI");
+        for (int[] dataCzasTemp:dataCzas) {
+            System.out.println(""+dataCzasTemp[2]);
+        }
+        int[][] newDataCzas = new int[10][3];
+        for (int i = 9; i >j; i--) {
+            //System.out.println("J: "+j+"i:"+i+" ///"+dataCzas[i][2]+" <- "+dataCzas[i-1][2]);
+            int[] temp = dataCzas[i-1];
+            newDataCzas[i] = temp;
+            dataName[i]=dataName[i-1];
+        }
+        for(int i=0;i<j;i++){
+            int[] temp = dataCzas[i];
+            newDataCzas[i] = temp;
+            dataName[i]=dataName[i];
+        }
+        System.out.println("PO ZMIANACH");
+        for (int[] dataCzasTemp:newDataCzas) {
+            System.out.println(""+dataCzasTemp[2]);
+        }
+        //AKTUALNIE JEST OD 6-24 Włącznie!!!!!
+        //Powinno wyrzucić 24, wrzucić PLACEHOLDER,0,0,15 pomiędzy 14 i 16
+        newDataCzas[j][0]=Integer.parseInt(String.valueOf(czas[0]));
+        newDataCzas[j][1]=Integer.parseInt(String.valueOf(czas[1]));
+        newDataCzas[j][2]=Integer.parseInt(String.valueOf(czas[2]));
+        dataName[j] = JOptionPane.showInputDialog(null,"NOWY REKORD! PODAJ SWÓJ NICK (3 znaki)");
+        System.out.println("PO ZMIANACH I WPISANIU");
+        for (int[] dataCzasTemp:newDataCzas) {
+            System.out.println(""+dataCzasTemp[2]);
+        }
+        FileOutputStream csv = null;
+        String path = null;
+        try {
+            switch (saper.getBok()) {
+                case 8:
+                    path = "E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordEasy.csv";
+                    break;
+                case 12:
+                    path = "E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordMedium.csv";
+                    break;
+                case 15:
+                    path = "E:\\Java\\Saper\\src\\com\\company\\csvs\\rekordHard.csv";
+                    break;
+            }
+            csv = new FileOutputStream(path,true);
+
+            PrintWriter writer = new PrintWriter(path);
+            writer.print("");
+            writer.close();
+            csv.write("Imie".getBytes(StandardCharsets.UTF_8));
+            csv.write(",".getBytes(StandardCharsets.UTF_8));
+            csv.write("Godzina".getBytes(StandardCharsets.UTF_8));
+            csv.write(",".getBytes(StandardCharsets.UTF_8));
+            csv.write("Minuta".getBytes(StandardCharsets.UTF_8));
+            csv.write(",".getBytes(StandardCharsets.UTF_8));
+            csv.write("Sekunda".getBytes(StandardCharsets.UTF_8));
+            csv.write("\n".getBytes(StandardCharsets.UTF_8));
+            for (int i = 0; i < 10; i++) {
+                csv.write(dataName[i].getBytes(StandardCharsets.UTF_8));
+                csv.write(("," + newDataCzas[i][0]).getBytes(StandardCharsets.UTF_8));
+                csv.write(("," + newDataCzas[i][1]).getBytes(StandardCharsets.UTF_8));
+                csv.write(("," + newDataCzas[i][2]).getBytes(StandardCharsets.UTF_8));
+                csv.write("\n".getBytes(StandardCharsets.UTF_8));
+            }
+        }catch(Exception e){
+            System.out.println("Problem przy zapisie");
+        }
+    }
+
+    private static long[] giveMeTimeElapsed() {
+        long different = new Date(System.currentTimeMillis()).getTime()-saper.getTime().getTime();
+        long elapsedHours = different / (1000 * 60 * 60);
+        different = different % (1000 * 60 * 60);
+        long elapsedMinutes = different / (1000 * 60);
+        different = different % (1000 * 60);
+        long elapsedSeconds = different / (1000);
+        long[] elapsed = new long[3];
+        System.out.println("h: "+elapsedHours+" minutes: "+elapsedMinutes+" seconds: "+elapsedSeconds);
+        elapsed[0] = elapsedHours;
+        elapsed[1] = elapsedMinutes;
+        elapsed[2] = elapsedSeconds;
+        return elapsed;
     }
 }
 
 //"Gdy nakładam prześcieradło na materac to znika mi rama od łóżka" type of situation
 
-//Bajery
-//Dźwięki przy przegranej, wygranej oraz klikaniu (Wykorzystać funkcję mouseClicked która narazie jest pusta)
-//Ranking z pliku, decydowany na podstawie czasu. Czas rozpoczęcia gry do zmiennej cyk, potem od czasu zakończenia
