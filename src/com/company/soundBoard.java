@@ -11,13 +11,13 @@ public class soundBoard {
         String filepath = "";
         switch(command) {
             case "win":
-                filepath = "E:\\Java\\Saper\\src\\com\\company\\sounds\\fanfars.wav";
+                filepath = "./src/com/company/sounds/fanfars.wav";
                 break;
             case "lose":
-                filepath = "E:\\Java\\Saper\\src\\com\\company\\sounds\\explosion.wav";
+                filepath = "./src/com/company/sounds/explosion.wav";
                 break;
             case "click":
-                filepath = "E:\\Java\\Saper\\src\\com\\company\\sounds\\blop2.wav";
+                filepath = "./src/com/company/sounds/blop2.wav";
         }
         try {
             File musicFile = new File(filepath);
